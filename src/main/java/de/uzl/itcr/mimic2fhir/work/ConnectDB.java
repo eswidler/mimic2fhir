@@ -125,7 +125,6 @@ public class ConnectDB {
 	}
 	
 	private MPatient getOnePatientFromDb(String query) {
-		
 		PreparedStatement statement;
 		try {
 			statement = connection.prepareStatement(query);
@@ -181,7 +180,7 @@ public class ConnectDB {
 					mAdm.setAdmissionLocation(rs.getString(8));
 
 					//Diagnoses
-					getDiagnoses(pat.getPatientSubjectId(), mAdm);;
+					getDiagnoses(pat.getPatientSubjectId(), mAdm);
 					
 					//Procedures
 					getProcedures(pat.getPatientSubjectId(), mAdm);
@@ -518,7 +517,7 @@ public class ConnectDB {
 	 * @return dictionary
 	 */
 	public HashMap<Integer, MWard> getLocations() {
-		String query = "SELECT DISTINCT curr_wardid, curr_careunit FROM transfers";
+		String query = "SELECT DISTINCT CURR_WARDID, CURR_CAREUNIT FROM transfers";
 		HashMap<Integer,MWard> wards = new HashMap<Integer,MWard>();
 		
 		PreparedStatement statement;

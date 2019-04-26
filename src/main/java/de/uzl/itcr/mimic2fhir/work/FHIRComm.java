@@ -48,7 +48,7 @@ public class FHIRComm {
 		ctx = FhirContext.forDstu3();
 		
 		// Use the narrative generator
-		ctx.setNarrativeGenerator(new DefaultThymeleafNarrativeGenerator());
+//		ctx.setNarrativeGenerator(new DefaultThymeleafNarrativeGenerator());
 		client = ctx.newRestfulGenericClient(configuration.getFhirServer());	
 		
 		if(this.configuration.isAuthRequired())
@@ -85,15 +85,53 @@ public class FHIRComm {
 			
 			String fullFilePath;
 			if(!number.equals("0")) {
-				fullFilePath = configuration.getFhirxmlFilePath() + "\\bundle" + number + ".xml";
+				fullFilePath = configuration.getFhirxmlFilePath() + "/bundle" + number + ".xml";
 			}
 			else{
-				fullFilePath = configuration.getFhirxmlFilePath() + "\\bundle.xml";
+				fullFilePath = configuration.getFhirxmlFilePath() + "/bundle.xml";
 			}
 			
-			Path path = Paths.get(fullFilePath);
+			Path path = Paths.get(fullFilePath);	
 		    byte[] strToBytes = xml.getBytes();
 	 
+		    if (!Files.exists(path)) {
+		        Files.createFile(path);
+			}
+		    
+		    //Write xml as file
+			Files.write(path, strToBytes);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+	}
+	
+	/**
+	 * Save FHIR-Ressource-Bundle as xml to location specified in Config
+	 * @param number Number of bundle. Use 0, if no number in file name wanted ("bundle.xml")
+	 * @param transactionBundle bundle to print to file
+	 */
+	public void printBundleAsJSONToFile(String number, Bundle transactionBundle) {
+		try {
+			String json = getBundleAsJSONString(transactionBundle);
+			
+			System.out.print("\n" + number);
+			
+			String fullFilePath;
+			if(!number.equals("0")) {
+				fullFilePath = configuration.getFhirxmlFilePath() + "/bundle" + number + ".json";
+			}
+			else{
+				fullFilePath = configuration.getFhirxmlFilePath() + "/bundle.json";
+			}
+			
+			Path path = Paths.get(fullFilePath);	
+		    byte[] strToBytes = json.getBytes();
+	 
+		    if (!Files.exists(path)) {
+		        Files.createFile(path);
+			}
+		    
 		    //Write xml as file
 			Files.write(path, strToBytes);
 		} catch (Exception e) {
@@ -144,12 +182,34 @@ public class FHIRComm {
 	}
 	
 	/**
+	 * Get a bundle as json string representation
+	 * @param bundle bundle to transform into a string
+	 * @return bundle json string
+	 */
+	public String getBundleAsJSONString(Bundle bundle) {
+		return ctx.newJsonParser()
+				.setPrettyPrint(true)
+				.encodeResourceToString(bundle);
+	}
+	
+	/**
 	 * Parse xml string to bundle
 	 * @param bundle bundle as xml string
 	 * @return bundle as Bundle
 	 */
 	public Bundle getBundleFromString(String bundle) {
 		return (Bundle) ctx.newXmlParser()
+				.setPrettyPrint(true)
+				.parseResource(bundle);
+	}
+	
+	/**
+	 * Parse json string to bundle
+	 * @param bundle bundle as json string
+	 * @return bundle as Bundle
+	 */
+	public Bundle getBundleFromJSONString(String bundle) {
+		return (Bundle) ctx.newJsonParser()
 				.setPrettyPrint(true)
 				.parseResource(bundle);
 	}

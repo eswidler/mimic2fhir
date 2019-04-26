@@ -15,12 +15,16 @@ limitations under the License.
 /***********************************************************************/
 package de.uzl.itcr.mimic2fhir;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.json.Json;
 import javax.json.JsonObject;
 
+import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Condition;
 import org.hl7.fhir.dstu3.model.Encounter;
 import org.hl7.fhir.dstu3.model.Location;
@@ -35,7 +39,9 @@ import org.hl7.fhir.dstu3.model.PractitionerRole;
 import org.hl7.fhir.dstu3.model.Procedure;
 import org.hl7.fhir.dstu3.model.Reference;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.primitive.IdDt;
+import ca.uhn.fhir.parser.IParser;
 import de.uzl.itcr.mimic2fhir.model.MAdmission;
 import de.uzl.itcr.mimic2fhir.model.MCaregiver;
 import de.uzl.itcr.mimic2fhir.model.MPatient;
@@ -59,6 +65,7 @@ public class Mimic2Fhir {
 
 	private OutputMode outputMode;
 	private int topPatients;
+	private int patientOffset;
 	
 	private ConnectDB dbAccess;
 	private FHIRComm fhir;
@@ -102,6 +109,15 @@ public class Mimic2Fhir {
 	 */
 	public void setTopPatients(int topPatients) {
 		this.topPatients = topPatients;
+	}
+	
+	/**
+	 * Set the offset to start loading patient; 0 if all
+	 * Works only with "all patients" import mode
+	 * @param patientOffset number of patients to load
+	 */
+	public void setPatientOffset(int patientOffset) {
+		this.patientOffset = patientOffset;
 	}
 
 	/**
@@ -147,18 +163,26 @@ public class Mimic2Fhir {
     	r.receive();
 
     	//loop all patients..
-    	for(int i = 1; i<= numberOfAllPatients; i++) {   	
+    	int firstRow = 1;
+    	if (patientOffset > 1) {
+    		firstRow = patientOffset;
+    	}
+    	
+    	numberOfAllPatients = (numberOfAllPatients + firstRow - 1);
+    	
+    	for(int i = firstRow; i<= numberOfAllPatients; i++) {
     		MPatient mimicPat2 = dbAccess.getPatientByRowId(i);
     		processPatient(mimicPat2, i);
     	}
 
+    	System.out.print("\nEND");
     	//Push end-Message to queue
-    	JsonObject message = Json.createObjectBuilder()
-    			.add("number", "0")
-    			.add("bundle", "END")
-    			.build();
-
-    	sendr.send(message.toString());    	 
+//    	JsonObject message = Json.createObjectBuilder()
+//    			.add("number", "0")
+//    			.add("bundle", "END")
+//    			.build();
+//
+//    	sendr.send(message.toString());
 
     	//close connection to queue
     	sendr.close();
@@ -267,20 +291,37 @@ public class Mimic2Fhir {
 				bundleC.addResourceToBundle(o);
 			}
 			
-
+//			System.out.print(fhir.getBundleAsJSONString(bundleC.getTransactionBundle()));
+			fhir.printBundleAsJSONToFile(
+					patNumber + "_" + bundleC.getInternalBundleNumber(),
+					bundleC.getTransactionBundle()
+			);
+			
 			//Push bundle to queue
-			JsonObject message = Json.createObjectBuilder()
-					.add("number", patNumber + "_" + bundleC.getInternalBundleNumber()) 
-					.add("bundle", fhir.getBundleAsString(bundleC.getTransactionBundle()))
-					.build();
+//			JsonObject message = Json.createObjectBuilder()
+//					.add("number", patNumber + "_" + bundleC.getInternalBundleNumber()) 
+//					.add("bundle", fhir.getBundleAsJSONString(bundleC.getTransactionBundle()))
+//					.build();
+			
+//			System.out.print(message);
+			
 
-			sendr.send(message.toString());  
+//			FhirContext ctxDstu3 = FhirContext.forDstu3();
+//			String bundleXml = fhir.getBundleAsString(bundleC.getTransactionBundle());
+//    		IParser xmlParser = ctxDstu3.newXmlParser();
+//    		IParser jsonParser = ctxDstu3.newJsonParser();
+//    		Bundle bundle = xmlParser.parseResource(Bundle.class, bundleXml);
+    		
+//    		JsonObject message = Json.createObjectBuilder()
+//					.add("number", patNumber + "_" + bundleC.getInternalBundleNumber()) 
+//					.add("bundle", jsonParser.encodeResourceToString(bundle))
+//					.build();
+//    		
+//			sendr.send(message.toString());  
 
 			//reset bundle and memory lists
 			bundleC.resetBundle();
 			resetMemoryLists();
-			
-
 		}
     	bundleC.resetInternalBundleNumber();
 	}
@@ -291,12 +332,16 @@ public class Mimic2Fhir {
 		//if bundle exceeds 15000 resources -> start new bundle
 		if(bundleC.getNumberOfResorces() > 15000) {
 			//Push bundle to queue
-			JsonObject message = Json.createObjectBuilder()
-					.add("number", numPat + "_" + bundleC.getInternalBundleNumber()) 
-					.add("bundle", fhir.getBundleAsString(bundleC.getTransactionBundle()))
-			        .build();
+//			JsonObject message = Json.createObjectBuilder()
+//					.add("number", numPat + "_" + bundleC.getInternalBundleNumber()) 
+//					.add("bundle", fhir.getBundleAsString(bundleC.getTransactionBundle()))
+//			        .build();
+			fhir.printBundleAsJSONToFile(
+				numPat + "_" + bundleC.getInternalBundleNumber(),
+				bundleC.getTransactionBundle()
+			);
 			
-			sendr.send(message.toString());  
+//			sendr.send(message.toString());  
 			
 			//reset bundle and memory lists
 			bundleC.resetBundle();
