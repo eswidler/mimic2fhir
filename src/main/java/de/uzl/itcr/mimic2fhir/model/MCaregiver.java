@@ -146,6 +146,7 @@ public class MCaregiver {
 		
 		if(role != null) {
 			role.addCode(cc);
+			role.setId(IdDt.newRandomUuid());
 		}
 		
 		return role;

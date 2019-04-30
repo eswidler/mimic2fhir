@@ -264,7 +264,7 @@ public class Mimic2Fhir {
 					o.addPerformer(new Reference(pFhirId));
 				}
 				//Order important - these reference pat & encounter
-				bundleC.addResourceToBundle(o);
+				bundleC.addUUIDResourceToBundle(o);
 			}
 
 
@@ -272,7 +272,7 @@ public class Mimic2Fhir {
 				//check if bundle is full
 				checkBundleLimit(patNumber, fhirPat, admission, enc, conditions, procedures);
 
-				bundleC.addResourceToBundle(o);
+				bundleC.addUUIDResourceToBundle(o);
 			}
 
 			for(Observation o : obsNotes) {
@@ -288,7 +288,7 @@ public class Mimic2Fhir {
 					o.addPerformer(new Reference(pFhirId));
 				}
 
-				bundleC.addResourceToBundle(o);
+				bundleC.addUUIDResourceToBundle(o);
 			}
 			
 //			System.out.print(fhir.getBundleAsJSONString(bundleC.getTransactionBundle()));

@@ -25,6 +25,8 @@ import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.Observation.ObservationStatus;
 
+import ca.uhn.fhir.model.primitive.IdDt;
+
 /**
  * Represents one row in mimiciii.labevents
  * @author Stefanie Ververs
@@ -188,6 +190,8 @@ public class MLabevent {
 				cc.addCoding().setSystem("http://hl7.org/fhir/v2/0078").setCode("A").setDisplay("Abnormal");
 				observation.setInterpretation(cc);
 			}
+			
+			observation.setId(IdDt.newRandomUuid());
 			
 			return observation;
 		}

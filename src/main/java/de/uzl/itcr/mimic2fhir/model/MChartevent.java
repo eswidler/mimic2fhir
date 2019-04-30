@@ -25,6 +25,8 @@ import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.Observation.ObservationStatus;
 
+import ca.uhn.fhir.model.primitive.IdDt;
+
 /**
  * Represents one row in mimiciii.chartevents
  * @author Stefanie Ververs
@@ -152,6 +154,9 @@ public class MChartevent {
 			observation.setValue(new StringType(this.getValue()));
 			//no units in data 
 		}
+		
+		observation.setId(IdDt.newRandomUuid());
+		
 		return observation;
 	}
 }

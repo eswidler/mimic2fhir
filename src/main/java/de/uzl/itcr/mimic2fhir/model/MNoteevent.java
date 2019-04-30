@@ -23,6 +23,7 @@ import org.hl7.fhir.dstu3.model.Observation;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.Observation.ObservationStatus;
 
+import ca.uhn.fhir.model.primitive.IdDt;
 import de.uzl.itcr.mimic2fhir.tools.Helper;
 
 /**
@@ -130,6 +131,9 @@ public class MNoteevent {
 		
 		//Record-Date
 		observation.setEffective(new DateTimeType(this.getChartdate()));
+		
+		observation.setId(IdDt.newRandomUuid());
+		
 		return observation;
 	}
 }

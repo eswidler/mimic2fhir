@@ -408,6 +408,8 @@ public class MPrescription {
 		//rate -> Speed
 		ma.setDosage(mad);
 		
+		ma.setId(IdDt.newRandomUuid());
+		
 		return ma;
 	}
 	
