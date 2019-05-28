@@ -15,6 +15,7 @@ limitations under the License.
 /***********************************************************************/
 package de.uzl.itcr.mimic2fhir;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,6 +39,9 @@ import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.PractitionerRole;
 import org.hl7.fhir.dstu3.model.Procedure;
 import org.hl7.fhir.dstu3.model.Reference;
+
+import com.github.javafaker.Faker;
+import com.github.javafaker.Name;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.primitive.IdDt;
@@ -80,7 +84,8 @@ public class Mimic2Fhir {
 	private BundleControl bundleC;
 	
 	private Sender sendr;
-
+	
+	Faker faker = new Faker();
 	
 	public Config getConfig() {
 		return config;
@@ -131,7 +136,12 @@ public class Mimic2Fhir {
     	caregivers = dbAccess.getCaregivers();
     	
     	//Preload Wards
-    	locations = dbAccess.getLocations();
+    	try {
+			locations = dbAccess.getLocations();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	
     	//initialize memoryLists of locations and caregivers and medication (-> conditional creates, each resource only once in bundle)
     	locationsInBundle = new HashMap<String,String>();
@@ -196,7 +206,7 @@ public class Mimic2Fhir {
 	
 	private void processPatient(MPatient mimicPat, int numPat) {
 		//Fill FHIR-Structure
-		Patient fhirPat = mimicPat.createFhirFromMimic();	
+		Patient fhirPat = mimicPat.createFhirFromMimic(faker);	
 		String patNumber;
 		int admissionIndex = 0;
 

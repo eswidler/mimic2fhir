@@ -19,11 +19,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.hl7.fhir.dstu3.model.Address;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.DateTimeType;
 import org.hl7.fhir.dstu3.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.dstu3.model.HumanName.NameUse;
 import org.hl7.fhir.dstu3.model.Patient;
+
+import com.github.javafaker.Faker;
+import com.github.javafaker.Name;
 
 import ca.uhn.fhir.model.primitive.IdDt;
 
@@ -33,7 +37,6 @@ import ca.uhn.fhir.model.primitive.IdDt;
  *
  */
 public class MPatient {
-	
 	public MPatient() {
 		admissions = new ArrayList<MAdmission>();
 	}
@@ -87,16 +90,24 @@ public class MPatient {
 	
 	/**
 	 * Create FHIR-"Patient"-resource from this data
+	 * @param faker 
 	 * @return FHIR-Patient
 	 */
-	public Patient createFhirFromMimic() {
+	public Patient createFhirFromMimic(Faker faker) {
 		Patient pMimic = new Patient();
+		
+		Name name = faker.name();
+		com.github.javafaker.Address fAddress = faker.address();
 		
 		//ID:
 		pMimic.addIdentifier().setSystem("http://www.imi-mimic.de/patients").setValue(patientSubjectId);
-
-		//Name : Patient_ID
-		pMimic.addName().setUse(NameUse.OFFICIAL).setFamily("Patient_" + patientSubjectId);
+		
+		//Name
+		pMimic.addName().setUse(NameUse.OFFICIAL).setFamily(name.lastName()).addGiven(name.firstName());
+		
+		Address pAddress = new Address();
+		pAddress.setCountry(fAddress.country()).setState(fAddress.state()).setCity(fAddress.city()).setPostalCode(fAddress.zipCode()).addLine(fAddress.streetAddress());
+		pMimic.addAddress(pAddress);
 		
 		//Date of Birth
 		pMimic.setBirthDate(birthDate);

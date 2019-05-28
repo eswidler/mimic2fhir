@@ -15,12 +15,21 @@ limitations under the License.
 /***********************************************************************/
 package de.uzl.itcr.mimic2fhir.work;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Map;
+
+import com.github.javafaker.Faker;
+import com.github.javafaker.Name;
+import com.opencsv.CSVReader;
 
 import de.uzl.itcr.mimic2fhir.model.MAdmission;
 import de.uzl.itcr.mimic2fhir.model.MCaregiver;
@@ -42,6 +51,8 @@ import de.uzl.itcr.mimic2fhir.model.MWard;
 public class ConnectDB {
 	private Config configuration;	
 	private Connection connection = null;
+	Faker faker = new Faker();
+	Name name = faker.name();
 	
 	/**
 	 * Create new DB-Connection with Config-Object
@@ -423,6 +434,7 @@ public class ConnectDB {
 					cg.setCaregiverId(rs.getInt(2));
 					cg.setLabel(rs.getString(3));
 					cg.setDescription(rs.getString(4));
+					cg.setFhirRepresentation(name);
 	
 					caregivers.put(cg.getCaregiverId(),cg);
 			 }
@@ -516,18 +528,42 @@ public class ConnectDB {
 	 * Get dictionary with all locations = wards, key = wardId, value: MWard-Object
 	 * @return dictionary
 	 */
-	public HashMap<Integer, MWard> getLocations() {
+	public HashMap<Integer, MWard> getLocations() throws IOException {
 		String query = "SELECT DISTINCT CURR_WARDID, CURR_CAREUNIT FROM transfers";
 		HashMap<Integer,MWard> wards = new HashMap<Integer,MWard>();
-		
+		 
 		PreparedStatement statement;
-		try {
+		try (
+	            Reader reader = Files.newBufferedReader(Paths.get("Hospitals.csv"));
+	            CSVReader csvReader = new CSVReader(reader);
+		){
+			String[] nextRecord;
+			// Read the first record in order to skip over the header line in the CSV
+			nextRecord = csvReader.readNext();
+						
 			statement = connection.prepareStatement(query);
 			ResultSet rs = statement.executeQuery();
+			
 			while (rs.next()) {
+					nextRecord = csvReader.readNext();
+					
+					Map<String, String> locInfo = new HashMap<>();
+					locInfo.put("ID", nextRecord[3]);
+					locInfo.put("Name", nextRecord[4]);
+					locInfo.put("Address", nextRecord[5]);
+					locInfo.put("City", nextRecord[6]);
+					locInfo.put("State", nextRecord[7]);
+					locInfo.put("Zip", nextRecord[8]);
+					locInfo.put("Telephone", nextRecord[10]);
+					locInfo.put("Type", nextRecord[11]);
+					locInfo.put("Status", nextRecord[12]);
+					locInfo.put("County", nextRecord[14]);
+					locInfo.put("Country", nextRecord[16]);
+					
 					MWard ward = new MWard();
 					ward.setWardId(rs.getInt(1));
 					ward.setCareUnit(rs.getString(2));
+					ward.setFhirLocation(locInfo);
 	
 					wards.put(ward.getWardId(),ward);
 			 }

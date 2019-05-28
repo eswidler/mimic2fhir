@@ -15,7 +15,13 @@ limitations under the License.
 /***********************************************************************/
 package de.uzl.itcr.mimic2fhir.model;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.hl7.fhir.dstu3.model.Address;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.ContactPoint;
 import org.hl7.fhir.dstu3.model.Location;
 
 import ca.uhn.fhir.model.primitive.IdDt;
@@ -28,6 +34,8 @@ import ca.uhn.fhir.model.primitive.IdDt;
 public class MWard {
 	private int wardId;
 	private String careUnit;
+	
+	private Location fhirLocation;
 	
 	public String getCareUnit() {
 		return careUnit;
@@ -50,17 +58,30 @@ public class MWard {
 	public String getWardName() {
 		return "Ward " + wardId + " (" + careUnit + ")";
 	}
-
+	
 	/**
 	 * Create FHIR-"Location"
-	 * @return FHIR-Location
+	 * @param locationInfo 
+	 * @return 
 	 */
-	public Location getFhirLocation() {
+	public void setFhirLocation(Map<String, String> locInfo) {
 		Location loc = new Location();
 		
-		loc.addIdentifier().setSystem("http://www.imi-mimic.de/wards").setValue(this.wardId + "_" + careUnit);
+		loc.setName(locInfo.get("Name"));
 		
-		loc.setName(getWardName());
+		Address locAddress = new Address();
+		locAddress.setText(locInfo.get("Address"));
+		locAddress.setCity(locInfo.get("City"));
+		locAddress.setState(locInfo.get("State"));
+		locAddress.setPostalCode(locInfo.get("Zip"));
+		locAddress.setCountry(locInfo.get("Country"));
+		loc.setAddress(locAddress);
+		
+//		List<ContactPoint> locTelecom = new ArrayList<ContactPoint>();
+//		ContactPoint c = new ContactPoint();
+//		loc.setTelecom(locTelecom);
+		
+		loc.addIdentifier().setSystem("http://www.imi-mimic.de/wards").setValue(locInfo.get("ID"));
 		
 		CodeableConcept cc = new CodeableConcept();
 		switch(careUnit) {
@@ -83,9 +104,14 @@ public class MWard {
 
 		}
 		loc.setType(cc);
-				
+		
 		loc.setId(IdDt.newRandomUuid());
 		
-		return loc;
+		this.fhirLocation = loc;
+	}
+
+	
+	public Location getFhirLocation() {
+		return this.fhirLocation;
 	}
 }

@@ -17,8 +17,13 @@ package de.uzl.itcr.mimic2fhir.model;
 
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Narrative.NarrativeStatus;
+
 import org.hl7.fhir.dstu3.model.Practitioner;
 import org.hl7.fhir.dstu3.model.PractitionerRole;
+
+import com.github.javafaker.Name;
+
+import org.hl7.fhir.dstu3.model.HumanName.NameUse;
 
 import ca.uhn.fhir.model.primitive.IdDt;
 
@@ -31,6 +36,7 @@ public class MCaregiver {
 	private int caregiverId;
 	private String label;
 	private String description;
+	private Practitioner fhirPractitioner;
 	
 	public int getCaregiverId() {
 		return caregiverId;
@@ -53,16 +59,17 @@ public class MCaregiver {
 	
 	/**
 	 * Create FHIR-"Practitioner" from this caregivers' data
-	 * @return FHIR-Practitioner
+	 * @param name 
+	 * @return 
 	 */
-	public Practitioner getFhirRepresentation() {
+	public void setFhirRepresentation(Name name) {
 		Practitioner p = new Practitioner();
 		
 		//Id
 		p.addIdentifier().setSystem("http://www.imi-mimic.de/practitioner").setValue(Integer.toString(caregiverId));
 		
 		//Name
-		p.addName().setFamily("Caregiver " + caregiverId);
+		p.addName().setUse(NameUse.OFFICIAL).setFamily(name.lastName()).addGiven(name.firstName());
 		
 		//Narrative
 		p.getText().setStatus(NarrativeStatus.GENERATED);
@@ -71,7 +78,15 @@ public class MCaregiver {
 		// temporary UUID
 		p.setId(IdDt.newRandomUuid());
 		
-		return p;
+		this.fhirPractitioner = p;
+	}
+	
+	/**
+	 * Create FHIR-"Practitioner" from this caregivers' data
+	 * @return FHIR-Practitioner
+	 */
+	public Practitioner getFhirRepresentation() {
+		return this.fhirPractitioner;
 	}
 	
 	/**

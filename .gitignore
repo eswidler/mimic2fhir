@@ -9,6 +9,7 @@ bin/
 target/
 *.class
 *.war
+.~lock*
 
 ## MacOS
 .DS_Store

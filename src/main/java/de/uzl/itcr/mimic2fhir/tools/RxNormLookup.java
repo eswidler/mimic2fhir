@@ -87,12 +87,12 @@ public class RxNormLookup {
 	}
 	
 	private List<RxNormConcept> findRxNormForGsn(String gsn) {
-		String url = "https://rxnav.nlm.nih.gov/REST/rxcui.json?idtype=GCN_SEQNO&id=" + gsn;
+		String url = "http://localhost:4000/REST/rxcui.json?idtype=GCN_SEQNO&id=" + gsn;
 		return findRxNorm(url);
 	}
 	
 	private List<RxNormConcept> findRxNormForNdc(String ndc) {
-		String url = "https://rxnav.nlm.nih.gov/REST/rxcui.json?idtype=NDC&id=" + ndc;
+		String url = "http://localhost:4000/REST/rxcui.json?idtype=NDC&id=" + ndc;
 		return findRxNorm(url);
 	}
 	
@@ -125,7 +125,7 @@ public class RxNormLookup {
 					RxNormConcept rc = new RxNormConcept();
 					rc.setCui(rxNorm.getString());
 					//get Name: Separate Call
-					rc.setName(getNameForCui(rc.getCui()));
+//					rc.setName(getNameForCui(rc.getCui()));
 					rxNormList.add(rc);
 				}
 			}
@@ -152,7 +152,7 @@ public class RxNormLookup {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 
 		String name = null;
-		String url = "https://rxnav.nlm.nih.gov/REST/rxcui/" + cui + "/property.json?propName=RxNorm%20Name";
+		String url = "http://localhost:4000/REST/rxcui/" + cui + "/property.json?propName=RxNorm%20Name";
 		HttpGet httpGet = new HttpGet(url);
 		
 		CloseableHttpResponse response = null;
