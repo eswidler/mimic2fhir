@@ -67,13 +67,13 @@ public class MDiagnose {
 		Condition cond = new Condition();
 		
 		//Patient
-		cond.setSubject(new Reference(patId));
+		cond.setSubject(new Reference(patId.replace("urn:uuid:", "Patient/")));
 		
 		//Identifier
 		cond.addIdentifier().setSystem("http://www.imi-mimic.de/diags").setValue(encId + "_" + this.seqNumber);
 		
 		//Context -> Encounter  
-		//cond.setContext(new Reference(encId));
+		cond.setContext(new Reference(encId.replace("urn:uuid:", "Encounter/")));
 		
 		//Diagnose itself (Code + Text)
 		CodeableConcept diagnoseCode = new CodeableConcept();

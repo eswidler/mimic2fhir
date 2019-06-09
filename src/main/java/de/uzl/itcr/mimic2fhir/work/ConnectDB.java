@@ -25,6 +25,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import com.github.javafaker.Faker;
@@ -51,7 +52,7 @@ import de.uzl.itcr.mimic2fhir.model.MWard;
 public class ConnectDB {
 	private Config configuration;	
 	private Connection connection = null;
-	Faker faker = new Faker();
+	Faker faker = new Faker(new Locale("en-US"));
 	Name name = faker.name();
 	
 	/**
@@ -197,7 +198,7 @@ public class ConnectDB {
 					getProcedures(pat.getPatientSubjectId(), mAdm);
 					
 					//Chartevents
-					getChartEvents(mAdm, pat.getPatientSubjectId());
+//					getChartEvents(mAdm, pat.getPatientSubjectId());
 					
 					//Labevents
 					getLabEvents(mAdm, pat.getPatientSubjectId());
@@ -548,6 +549,8 @@ public class ConnectDB {
 					nextRecord = csvReader.readNext();
 					
 					Map<String, String> locInfo = new HashMap<>();
+					locInfo.put("Lng", nextRecord[0]);
+					locInfo.put("Lat", nextRecord[1]);
 					locInfo.put("ID", nextRecord[3]);
 					locInfo.put("Name", nextRecord[4]);
 					locInfo.put("Address", nextRecord[5]);

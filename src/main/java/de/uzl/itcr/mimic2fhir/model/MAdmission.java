@@ -209,7 +209,7 @@ public class MAdmission {
 			enc.addIdentifier().setSystem("http://www.imi-mimic.de/encs").setValue(getAdmissionId());
 			
 			//Patient
-			enc.setSubject(new Reference(patId));
+			enc.setSubject(new Reference(patId.replace("urn:uuid:", "Patient/")));
 			
 			//Period
 			enc.setPeriod(new Period().setStart(getAdmissionTime()).setEnd(getDischargeTime()));

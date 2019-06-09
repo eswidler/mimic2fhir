@@ -259,8 +259,8 @@ public class MPrescription {
 		
 		ma.setStatus(MedicationAdministrationStatus.COMPLETED);
 
-		ma.setSubject(new Reference(patId));
-		ma.setContext(new Reference(encId));
+		ma.setSubject(new Reference(patId.replace("urn:uuid:", "Patient/")));
+		ma.setContext(new Reference(encId.replace("urn:uuid:", "Encounter/")));
 		
 		ma.setEffective(new Period().setEnd(end).setStart(start));
 		

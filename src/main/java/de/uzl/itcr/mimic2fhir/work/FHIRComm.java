@@ -213,6 +213,7 @@ public class FHIRComm {
 	 * @return bundle json string
 	 */
 	public String getBundleAsJSONString(Bundle bundle) {
+		System.out.println(ctx.newJsonParser().encodeResourceToString(bundle));
 		return ctx.newJsonParser()
 //				.setPrettyPrint(true)
 				.encodeResourceToString(bundle);

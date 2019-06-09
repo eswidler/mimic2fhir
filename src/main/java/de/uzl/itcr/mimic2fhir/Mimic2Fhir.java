@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -85,7 +86,7 @@ public class Mimic2Fhir {
 	
 	private Sender sendr;
 	
-	Faker faker = new Faker();
+	Faker faker = new Faker(new Locale("en-US"));
 	
 	public Config getConfig() {
 		return config;
@@ -245,6 +246,7 @@ public class Mimic2Fhir {
 					bundleC.addUUIDResourceWithConditionToBundle(med, "code=" + med.getCode().getCodingFirstRep().getCode());
 					medicationInBundle.put(identifier, med.getId());
 				}
+				System.out.println(med.getIdBase());
 			}
 			
 			//..and MedicationAdministrations (with correct Medication as Reference)

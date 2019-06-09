@@ -23,6 +23,7 @@ import org.hl7.fhir.dstu3.model.Address;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.ContactPoint;
 import org.hl7.fhir.dstu3.model.Location;
+import org.hl7.fhir.dstu3.model.Location.LocationPositionComponent;
 
 import ca.uhn.fhir.model.primitive.IdDt;
 
@@ -68,6 +69,11 @@ public class MWard {
 		Location loc = new Location();
 		
 		loc.setName(locInfo.get("Name"));
+		
+		LocationPositionComponent locPos = new LocationPositionComponent();
+		locPos.setLatitude(Double.parseDouble(locInfo.get("Lat")));
+		locPos.setLongitude(Double.parseDouble(locInfo.get("Lng")));
+		loc.setPosition(locPos);
 		
 		Address locAddress = new Address();
 		locAddress.setText(locInfo.get("Address"));

@@ -131,10 +131,10 @@ public class MChartevent {
 		observation.setCode(cc);
 		
 		//Pat-Reference
-		observation.setSubject(new Reference(patId));
+		observation.setSubject(new Reference(patId.replace("urn:uuid:", "Patient/")));
 		
 		//Enc-Reference
-		observation.setContext(new Reference(encId));
+		observation.setContext(new Reference(encId.replace("urn:uuid:", "Encounter/")));
 		
 		//Record-Date
 		observation.setEffective(new DateTimeType(this.getRecordDate()));

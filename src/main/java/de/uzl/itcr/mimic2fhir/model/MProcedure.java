@@ -66,13 +66,13 @@ public class MProcedure {
 		Procedure proc = new Procedure();
 		
 		//Patient
-		proc.setSubject(new Reference(patId));
+		proc.setSubject(new Reference(patId.replace("urn:uuid:", "Patient/")));
 		
 		//Identifier
 		proc.addIdentifier().setSystem("http://www.imi-mimic.de/procs").setValue(encId + "_" + this.seqNumber);
 		
 		//Context -> Encounter  
-		//cond.setContext(new Reference(encId));
+		proc.setContext(new Reference(encId.replace("urn:uuid:", "Encounter/")));
 		
 		//State
 		proc.setStatus(ProcedureStatus.COMPLETED);
