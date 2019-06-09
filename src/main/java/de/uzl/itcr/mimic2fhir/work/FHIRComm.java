@@ -15,6 +15,13 @@ limitations under the License.
 /***********************************************************************/
 package de.uzl.itcr.mimic2fhir.work;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,6 +45,9 @@ public class FHIRComm {
 	private IGenericClient client;
 	
 	private Config configuration;
+	
+	private String fullBundleFullFilePath;
+	private PrintStream printStream;
 	
 	/**
 	 * Create new Fhir-Context with config-Object
@@ -63,6 +73,20 @@ public class FHIRComm {
 		
 		//Gzip output content
 		client.registerInterceptor(new GZipContentInterceptor());
+		
+		fullBundleFullFilePath = configuration.getFhirxmlFilePath() + "/bundle_full.ndjson";
+		
+		Path path = Paths.get(fullBundleFullFilePath);
+		
+		try {
+			 if (!Files.exists(path)) {
+				Files.createFile(path);
+			}
+			 printStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(fullBundleFullFilePath, true)));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -117,23 +141,25 @@ public class FHIRComm {
 			
 			System.out.print("\n" + number);
 			
-			String fullFilePath;
-			if(!number.equals("0")) {
-				fullFilePath = configuration.getFhirxmlFilePath() + "/bundle" + number + ".json";
-			}
-			else{
-				fullFilePath = configuration.getFhirxmlFilePath() + "/bundle.json";
-			}
-			
-			Path path = Paths.get(fullFilePath);	
-		    byte[] strToBytes = json.getBytes();
+//			if(!number.equals("0")) {
+//				fullFilePath = configuration.getFhirxmlFilePath() + "/bundle" + number + ".json";
+//			}
+//			else{
+//				fullFilePath = configuration.getFhirxmlFilePath() + "/bundle.json";
+//			}
+				
+//		    byte[] strToBytes = json.getBytes();
 	 
-		    if (!Files.exists(path)) {
-		        Files.createFile(path);
-			}
+//		    if (!Files.exists(path)) {
+//		        Files.createFile(path);
+//			}
 		    
 		    //Write xml as file
-			Files.write(path, strToBytes);
+//			Files.write(path, strToBytes);
+			
+			// Open given file in append mode. 
+		      printStream.println(json);
+//		      p.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -188,7 +214,7 @@ public class FHIRComm {
 	 */
 	public String getBundleAsJSONString(Bundle bundle) {
 		return ctx.newJsonParser()
-				.setPrettyPrint(true)
+//				.setPrettyPrint(true)
 				.encodeResourceToString(bundle);
 	}
 	
