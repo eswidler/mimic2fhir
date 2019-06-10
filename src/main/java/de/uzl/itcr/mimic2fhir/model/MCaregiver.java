@@ -76,7 +76,7 @@ public class MCaregiver {
 		p.getText().setDivAsString("<div>Caregiver with Id " + caregiverId + "</div>");
 	
 		// temporary UUID
-		p.setId(IdDt.newRandomUuid());
+		p.setId(IdDt.newRandomUuid().toString().replace("urn:uuid:", "Practitioner/"));
 		
 		this.fhirPractitioner = p;
 	}
@@ -161,7 +161,7 @@ public class MCaregiver {
 		
 		if(role != null) {
 			role.addCode(cc);
-			role.setId(IdDt.newRandomUuid());
+			role.setId(IdDt.newRandomUuid().toString().replace("urn:uuid:", "PractitionerRole/"));
 		}
 		
 		return role;

@@ -241,7 +241,7 @@ public class MPrescription {
 			m.addIngredient(new MedicationIngredientComponent(ci));
 		}
 		
-		m.setId(IdDt.newRandomUuid());
+		m.setId(IdDt.newRandomUuid().toString().replace("urn:uuid:", "Medication/"));
 		
 		return m;
 	}
@@ -259,8 +259,8 @@ public class MPrescription {
 		
 		ma.setStatus(MedicationAdministrationStatus.COMPLETED);
 
-		ma.setSubject(new Reference(patId.replace("urn:uuid:", "Patient/")));
-		ma.setContext(new Reference(encId.replace("urn:uuid:", "Encounter/")));
+		ma.setSubject(new Reference(patId));
+		ma.setContext(new Reference(encId));
 		
 		ma.setEffective(new Period().setEnd(end).setStart(start));
 		
@@ -408,7 +408,7 @@ public class MPrescription {
 		//rate -> Speed
 		ma.setDosage(mad);
 		
-		ma.setId(IdDt.newRandomUuid());
+		ma.setId(IdDt.newRandomUuid().toString().replace("urn:uuid:", "MedicationAdministration/"));
 		
 		return ma;
 	}

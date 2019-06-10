@@ -379,7 +379,7 @@ public class MPatient {
 		
 		// Give the patient a temporary UUID so that other resources in
 		// the transaction can refer to it
-		pMimic.setId(IdDt.newRandomUuid());
+		pMimic.setId(IdDt.newRandomUuid().toString().replace("urn:uuid:", "Patient/"));
 		
 		return pMimic;
 	}

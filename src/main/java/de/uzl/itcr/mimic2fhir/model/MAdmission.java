@@ -52,6 +52,7 @@ public class MAdmission {
 	}
 	
 	private String admissionId;
+	private String resourceId;
 	private String maritalStatus;
 	private String language;
 	private String religion;
@@ -132,6 +133,14 @@ public class MAdmission {
 		this.admissionId = admissionId;
 	}
 	
+	private String getResourceId() {
+		return this.resourceId;
+	}
+	
+	public void setResourceId(String resourceId) {
+		this.resourceId = resourceId;
+	}
+	
 	public String getMaritalStatus() {
 		return maritalStatus;
 	}
@@ -191,7 +200,7 @@ public class MAdmission {
 		
 		List<Condition> conditions = new ArrayList<Condition>();		
 			for(MDiagnose d : diagnoses) {
-				conditions.add(d.getFhirCondition(patId, getAdmissionId()));
+				conditions.add(d.getFhirCondition(patId, getResourceId()));
 			}
 		return conditions;
 	}
@@ -209,7 +218,7 @@ public class MAdmission {
 			enc.addIdentifier().setSystem("http://www.imi-mimic.de/encs").setValue(getAdmissionId());
 			
 			//Patient
-			enc.setSubject(new Reference(patId.replace("urn:uuid:", "Patient/")));
+			enc.setSubject(new Reference(patId));
 			
 			//Period
 			enc.setPeriod(new Period().setStart(getAdmissionTime()).setEnd(getDischargeTime()));
@@ -314,11 +323,12 @@ public class MAdmission {
 
 			// Give the encounter a temporary UUID so that other resources in
 			// the transaction can refer to it
-			enc.setId(IdDt.newRandomUuid());
+//			enc.setId(IdDt.newRandomUuid().toString().replace("urn:uuid:", "Encounter/"));
+			enc.setId(this.getResourceId());
 			
 			return enc;
 	}
-	
+
 	/**
 	 * Create all FHIR-"Observation"s for this encounter (Chartevents)
 	 * @param patId Patient-FHIR-Resource-Id
@@ -379,7 +389,7 @@ public class MAdmission {
 		
 		List<Procedure> procedures = new ArrayList<Procedure>();		
 			for(MProcedure p : this.procedures) {			
-				procedures.add(p.getFhirProcedure(patId, getAdmissionId()));
+				procedures.add(p.getFhirProcedure(patId, getResourceId()));
 			}
 		return procedures;
 	}

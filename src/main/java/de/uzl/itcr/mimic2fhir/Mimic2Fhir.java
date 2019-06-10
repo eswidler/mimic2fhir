@@ -165,7 +165,7 @@ public class Mimic2Fhir {
     	}
 
     	//Sender for sending bundle messages to queue
-    	sendr = new Sender();
+//    	sendr = new Sender();
     	
     	//Start Message-Receiver (handles bundle operations)
     	Receiver r = new Receiver();
@@ -185,6 +185,8 @@ public class Mimic2Fhir {
     		MPatient mimicPat2 = dbAccess.getPatientByRowId(i);
     		processPatient(mimicPat2, i);
     	}
+    	
+//    	fhir.closePrintStream();
 
     	System.out.print("\nEND");
     	//Push end-Message to queue
@@ -196,7 +198,7 @@ public class Mimic2Fhir {
 //    	sendr.send(message.toString());
 
     	//close connection to queue
-    	sendr.close();
+//    	sendr.close();
 	}
 	
 	private void resetMemoryLists() {
@@ -246,7 +248,6 @@ public class Mimic2Fhir {
 					bundleC.addUUIDResourceWithConditionToBundle(med, "code=" + med.getCode().getCodingFirstRep().getCode());
 					medicationInBundle.put(identifier, med.getId());
 				}
-				System.out.println(med.getIdBase());
 			}
 			
 			//..and MedicationAdministrations (with correct Medication as Reference)
@@ -459,7 +460,7 @@ public class Mimic2Fhir {
 		hospital.setName("IMI-Mimic Hospital");
 		
 		
-		hospital.setId(IdDt.newRandomUuid());
+		hospital.setId(IdDt.newRandomUuid().toString().replace("urn:uuid:", "Organization/"));
 		return hospital;
 	}
 }

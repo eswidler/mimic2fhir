@@ -131,10 +131,10 @@ public class MChartevent {
 		observation.setCode(cc);
 		
 		//Pat-Reference
-		observation.setSubject(new Reference(patId.replace("urn:uuid:", "Patient/")));
+		observation.setSubject(new Reference(patId));
 		
 		//Enc-Reference
-		observation.setContext(new Reference(encId.replace("urn:uuid:", "Encounter/")));
+		observation.setContext(new Reference(encId));
 		
 		//Record-Date
 		observation.setEffective(new DateTimeType(this.getRecordDate()));
@@ -155,7 +155,7 @@ public class MChartevent {
 			//no units in data 
 		}
 		
-		observation.setId(IdDt.newRandomUuid());
+		observation.setId(IdDt.newRandomUuid().toString().replace("urn:uuid:", "Observation/"));
 		
 		return observation;
 	}

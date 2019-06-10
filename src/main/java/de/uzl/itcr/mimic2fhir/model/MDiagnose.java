@@ -67,13 +67,13 @@ public class MDiagnose {
 		Condition cond = new Condition();
 		
 		//Patient
-		cond.setSubject(new Reference(patId.replace("urn:uuid:", "Patient/")));
+		cond.setSubject(new Reference(patId));
 		
 		//Identifier
 		cond.addIdentifier().setSystem("http://www.imi-mimic.de/diags").setValue(encId + "_" + this.seqNumber);
 		
 		//Context -> Encounter  
-		cond.setContext(new Reference(encId.replace("urn:uuid:", "Encounter/")));
+		cond.setContext(new Reference(encId));
 		
 		//Diagnose itself (Code + Text)
 		CodeableConcept diagnoseCode = new CodeableConcept();
@@ -84,7 +84,7 @@ public class MDiagnose {
 		
 		// Give the condition a temporary UUID so that other resources in
 		// the transaction can refer to it
-		cond.setId(IdDt.newRandomUuid());
+		cond.setId(IdDt.newRandomUuid().toString().replace("urn:uuid:", "Condition/"));
 		
 		return cond;
 	}

@@ -111,7 +111,7 @@ public class MWard {
 		}
 		loc.setType(cc);
 		
-		loc.setId(IdDt.newRandomUuid());
+		loc.setId(IdDt.newRandomUuid().toString().replace("urn:uuid:", "Location/"));
 		
 		this.fhirLocation = loc;
 	}

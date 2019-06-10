@@ -32,6 +32,7 @@ import com.github.javafaker.Faker;
 import com.github.javafaker.Name;
 import com.opencsv.CSVReader;
 
+import ca.uhn.fhir.model.primitive.IdDt;
 import de.uzl.itcr.mimic2fhir.model.MAdmission;
 import de.uzl.itcr.mimic2fhir.model.MCaregiver;
 import de.uzl.itcr.mimic2fhir.model.MChartevent;
@@ -175,6 +176,8 @@ public class ConnectDB {
 			while (rs.next()) {
 					MAdmission mAdm = new MAdmission();
 					mAdm.setAdmissionId(rs.getString(3));
+					// We want the admission ID to be a relative URI:URN, which is what FHIR services would expect
+					mAdm.setResourceId(IdDt.newRandomUuid().toString().replace("urn:uuid:", "Encounter/"));
 					
 					//Times
 					mAdm.setAdmissionTime(rs.getDate(4));

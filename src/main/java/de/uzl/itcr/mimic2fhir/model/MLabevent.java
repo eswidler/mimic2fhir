@@ -156,10 +156,10 @@ public class MLabevent {
 			
 			
 			//Pat-Reference
-			observation.setSubject(new Reference(patId.replace("urn:uuid:", "Patient/")));
+			observation.setSubject(new Reference(patId));
 			
 			//Enc-Reference
-			observation.setContext(new Reference(encId.replace("urn:uuid:", "Encounter/")));
+			observation.setContext(new Reference(encId));
 			
 			//Record-Date
 			observation.setEffective(new DateTimeType(this.getAcquisitionDate()));
@@ -191,7 +191,7 @@ public class MLabevent {
 				observation.setInterpretation(cc);
 			}
 			
-			observation.setId(IdDt.newRandomUuid());
+			observation.setId(IdDt.newRandomUuid().toString().replace("urn:uuid:", "Observation/"));
 			
 			return observation;
 		}

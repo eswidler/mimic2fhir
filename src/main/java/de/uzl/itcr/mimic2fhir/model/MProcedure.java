@@ -66,13 +66,13 @@ public class MProcedure {
 		Procedure proc = new Procedure();
 		
 		//Patient
-		proc.setSubject(new Reference(patId.replace("urn:uuid:", "Patient/")));
+		proc.setSubject(new Reference(patId));
 		
 		//Identifier
 		proc.addIdentifier().setSystem("http://www.imi-mimic.de/procs").setValue(encId + "_" + this.seqNumber);
 		
 		//Context -> Encounter  
-		proc.setContext(new Reference(encId.replace("urn:uuid:", "Encounter/")));
+		proc.setContext(new Reference(encId));
 		
 		//State
 		proc.setStatus(ProcedureStatus.COMPLETED);
@@ -86,7 +86,7 @@ public class MProcedure {
 		
 		// Give the procedure a temporary UUID so that other resources in
 		// the transaction can refer to it
-		proc.setId(IdDt.newRandomUuid());
+		proc.setId(IdDt.newRandomUuid().toString().replace("urn:uuid:", "Procedure/"));
 		
 		return proc;
 	}

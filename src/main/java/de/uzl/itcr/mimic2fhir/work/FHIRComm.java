@@ -78,15 +78,22 @@ public class FHIRComm {
 		
 		Path path = Paths.get(fullBundleFullFilePath);
 		
-		try {
-			 if (!Files.exists(path)) {
-				Files.createFile(path);
-			}
-			 printStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(fullBundleFullFilePath, true)));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		// Delete the file if it already exists 
+//		try {
+//			Files.delete(path);
+//		} catch (IOException e1) {
+//			e1.printStackTrace();
+//		}
+//					
+//		try {
+//			 if (!Files.exists(path)) {
+//				Files.createFile(path);
+//			}
+//			 printStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(fullBundleFullFilePath, true)));
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 	
 	/**
@@ -138,32 +145,38 @@ public class FHIRComm {
 	public void printBundleAsJSONToFile(String number, Bundle transactionBundle) {
 		try {
 			String json = getBundleAsJSONString(transactionBundle);
-			
 			System.out.print("\n" + number);
 			
-//			if(!number.equals("0")) {
-//				fullFilePath = configuration.getFhirxmlFilePath() + "/bundle" + number + ".json";
-//			}
-//			else{
-//				fullFilePath = configuration.getFhirxmlFilePath() + "/bundle.json";
-//			}
-				
-//		    byte[] strToBytes = json.getBytes();
+			String fullFilePath;
+			if(!number.equals("0")) {
+				fullFilePath = configuration.getFhirxmlFilePath() + "/bundle" + number + ".ndjson";
+			}
+			else{
+				fullFilePath = configuration.getFhirxmlFilePath() + "/bundle.ndjson";
+			}
+			
+			Path path = Paths.get(fullFilePath);	
+		    byte[] strToBytes = json.getBytes();
 	 
-//		    if (!Files.exists(path)) {
-//		        Files.createFile(path);
-//			}
+		    if (!Files.exists(path)) {
+		        Files.createFile(path);
+			}
 		    
 		    //Write xml as file
-//			Files.write(path, strToBytes);
+			Files.write(path, strToBytes);
 			
 			// Open given file in append mode. 
-		      printStream.println(json);
+//		      printStream.println(json);
+		      
 //		      p.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
+	}
+	
+	public void closePrintStream() {
+		printStream.close();
 	}
 		
 	
@@ -213,8 +226,8 @@ public class FHIRComm {
 	 * @return bundle json string
 	 */
 	public String getBundleAsJSONString(Bundle bundle) {
-		System.out.println(ctx.newJsonParser().encodeResourceToString(bundle));
 		return ctx.newJsonParser()
+				.setOmitResourceId(false)
 //				.setPrettyPrint(true)
 				.encodeResourceToString(bundle);
 	}
